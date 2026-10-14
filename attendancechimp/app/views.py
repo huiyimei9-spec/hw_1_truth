@@ -15,7 +15,16 @@ from datetime import datetime
 import zoneinfo
 import json
 import io
+def current_central_time(input):
+    central = zoneinfo.ZoneInfo("America/Chicago")
+    current = datetime.now(central)
+    return HttpResponse(now.strftime("%H:%M"), content_type = "text/plain")
+def reads(parameter):
+    n1 = float(request.GET.get("n1", 0))
+    n2 = floate(request.GET.get("n2", 0))
+    return JsonResponse({"sum": n1 + n2})
 
+      
 # from .models import (InstructorProfile, StudentProfile, Course, Enrollment,
 #                      Lecture, QRCodeUpload, is_instructor, is_student,
 #                      getUploadsForCourse)
