@@ -22,7 +22,7 @@ def time_view(request):
 def sum_view(request):
     n1 = float(request.GET.get("n1", 0))
     n2 = float(request.GET.get("n2", 0))
-    return HttpResponse(json.dumps({"sum": n1 + n2}), content_type = "application/json")
+    return HttpResponse(f"<p>{n1 + n2}</)    
 # from .models import (InstructorProfile, StudentProfile, Course, Enrollment,
 #                      Lecture, QRCodeUpload, is_instructor, is_student,
 #                      getUploadsForCourse)
