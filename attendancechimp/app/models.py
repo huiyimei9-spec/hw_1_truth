@@ -31,35 +31,58 @@ logger = logging.getLogger(__name__) # set up tracking, auditing, and debugging
 # ---------------------------------------------------------------------------
 # User profiles
 # ---------------------------------------------------------------------------
-
+class InstructorProfile(models.Model):
+    InstructorID = models.IntegerField(primary_key = True)
+    first_name = models.CharField(max_length = 50)
+    last_name = models.CharField(max_length = 50)
+    email = models.CharField(max_length = 50)
+class StudentProfile(models.Model):
+    StudentID = models.IntegerField(primary_key = True)
+    first_name = models.CharField(max_length = 50)
+    last_name = models.CharField(max_length = 50)
+    email = models.CharField(max_length = 50)
+	
 
 
 
 # ---------------------------------------------------------------------------
 # Course
 # ---------------------------------------------------------------------------
-
+class Course(models.Model):
+    CourseID = models.IntegerField(primary_key = True)
+    coursename = models.CharField(max_length = 50)
+    Instructor = models.ForeignKey(InstructorProfile, on_delete = models.CASCADE)
+    meetingschedule = models.CharField(max_length = 50)
 
 
 
 # ---------------------------------------------------------------------------
 # Enrollment
 # ---------------------------------------------------------------------------
-
+class Enrollment(models.Model):
+    student = models.ManyToManyField(StudentProfile)
+    course = models.ManyToManyField(Course)
 
 
 
 # ---------------------------------------------------------------------------
 # Lecture
 # ---------------------------------------------------------------------------
-
+class Lecture(models.Model):
+    lectureID = models.IntegerField(primary_key = True)
+    course = models.ForeignKey(Course, on_delete = models.CASCADE)
+    date = models.DateField()
+    QRID = models.IntegerField()
 
 
 
 # ---------------------------------------------------------------------------
 # QR Code Upload
 # ---------------------------------------------------------------------------
-
+class QR_Code_Upload(models.Model):
+    UploadID = models.IntegerField(primary_key = True)
+    student = models.ForeignKey(StudentProfile, on_delete = models.CASCADE)
+    lecture = models.ForeignKey(Lecture, on_delete = models.SET_NULL, null = True, blank = True)
 
 
 
