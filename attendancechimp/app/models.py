@@ -32,11 +32,13 @@ logger = logging.getLogger(__name__) # set up tracking, auditing, and debugging
 # User profiles
 # ---------------------------------------------------------------------------
 class InstructorProfile(models.Model):
+    user = models.OneToOneField(User, on_delete = models.CASCADE)
     InstructorID = models.IntegerField(primary_key = True)
     first_name = models.CharField(max_length = 50)
     last_name = models.CharField(max_length = 50)
     email = models.CharField(max_length = 50)
 class StudentProfile(models.Model):
+    user = models.OneToOneField(User, on_delete = models.CASCADE)
     StudentID = models.IntegerField(primary_key = True)
     first_name = models.CharField(max_length = 50)
     last_name = models.CharField(max_length = 50)
@@ -60,8 +62,10 @@ class Course(models.Model):
 # Enrollment
 # ---------------------------------------------------------------------------
 class Enrollment(models.Model):
-    student = models.ManyToManyField(StudentProfile)
-    course = models.ManyToManyField(Course)
+    student = models.ForeignKey(StudentProfile, on_delete = models.CASCADE)
+    course = models.ForeignKey(Course, on_delete = models.CASCADE)
+    class Meta:
+        unique_together = ("student", "course")
 
 
 
@@ -83,6 +87,7 @@ class QR_Code_Upload(models.Model):
     UploadID = models.IntegerField(primary_key = True)
     student = models.ForeignKey(StudentProfile, on_delete = models.CASCADE)
     lecture = models.ForeignKey(Lecture, on_delete = models.SET_NULL, null = True, blank = True)
+    time = models.DateTimeField(auto_now_add = True)
 
 
 
