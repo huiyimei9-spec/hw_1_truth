@@ -1,0 +1,5 @@
+The Entity Relations Diagram created by a LLM seems to have more details, harder to read for humans, harder to implement, and more
+wholesome. In addition, the diagram created by the LLM uses a helper text for the meeting schedule that I did not include.
+The LLM uses a lot of advanced code to turn this into a more usable app. 
+The Entity Relations Diagram I made is simple and more readable for humans.
+
