@@ -42,7 +42,7 @@ def index(request):
     """Render the home page (index.html)."""
     current_time = datetime.now(CDT)
     context = {
-    "current_time": current_time.strftime("%H:%M),
+    "current_time": current_time.strftime("%H:%M"),
     "user": request.user,
 }
     return render(request, 'app/index.html', context)
