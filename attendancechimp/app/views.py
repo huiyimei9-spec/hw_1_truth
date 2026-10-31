@@ -52,6 +52,9 @@ def index(request):
 # ---------------------------------------------------------------------------
 # HW4  — user creation
 
+@require_GET
+def new(request):
+    return render(request, 'app/new.html')
 @csrf_exempt
 @require_POST
 def createUser(request):
