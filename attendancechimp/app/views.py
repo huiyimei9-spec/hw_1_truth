@@ -12,6 +12,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from datetime import datetime
+
+from django.views.decorators.http import require_GET, require_POST
+from .models import InstructorProfile, StudentProfile
+
 import zoneinfo
 import json
 import io
@@ -36,14 +40,36 @@ CDT = zoneinfo.ZoneInfo("America/Chicago")
 
 def index(request):
     """Render the home page (index.html)."""
-
-    context = {}
+    current_time = datetime.now(CDT)
+    context = {
+    "current_time": current_time.strftime("%H:%M),
+    "user": request.user,
+}
     return render(request, 'app/index.html', context)
 
 
 
 # ---------------------------------------------------------------------------
 # HW4  — user creation
+
+@csrf_exempt
+@require_POST
+def createUser(request):
+    email = request.POST.get("email")
+    user_name = request.POST.get("user_name")
+    password = request.POST.get("password")
+    is_student = request.POST.get("is_student")
+    if not (email and user_name and password and is_student is not None):
+        return HttpResponseBadRequest("Missing Field")
+    if User.objects.filter(email=email).exists():
+        return HttpResponseBadRequest("Email already registered")
+    user = User.objects.create_user(username=user_name, email=email, password=password)
+    if is_student == "1":
+        StudentProfile.objects.create(user=user)
+    else:
+        InstructorProfile.objects.create(user=user)
+    login(request, user)
+    return HttpResponse("User created")
 # ---------------------------------------------------------------------------
 
 

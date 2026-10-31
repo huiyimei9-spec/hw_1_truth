@@ -2,6 +2,13 @@
 <html><head><title>Login</title></head>
 <body style="text-align:center; font-family:Arial;">
 <h1>Log In</h1>
-
+<form method="post" action="/accounts/login/">
+    {% csrf_token %}
+    <label for="id_username">Username:</label>
+    <input type="text" id="id_username" name="username"><br>
+    <label for="id_password">Password:</label>
+    <input type="password" id="id_password" name="password"><br>
+    <button type="submit">Log In</button>
+</form>
 </body>
 </html>
