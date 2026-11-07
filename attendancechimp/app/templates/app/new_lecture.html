@@ -1,4 +1,4 @@
-<DOCTYPE html>
+<!DOCTYPE html>
 <html lang = "en">
 <head>
     <meta charset="UTF-8">
@@ -9,10 +9,12 @@
     <form action="/app/createLecture" method="post">
         {% csrf_token %}
         <label for="choice">Course:</label>
-        <select id="choice" name="choice>
+        <select id="choice" name="choice">
             {% for course in courses %}
-                <option value="{{ course.name }}">{{ course.name }}</option>
-            {% end for %}
+                <option value="{{ course.coursename }}">{{ course.coursename }}</option>
+            {% endfor %}
         </select><br>
         <button type="submit">Create Lecture</button>
     </form>
+</body>
+</html>
