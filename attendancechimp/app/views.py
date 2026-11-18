@@ -18,7 +18,7 @@ from .models import InstructorProfile, StudentProfile
 import random
 from django.db.models import Max
 from django.contrib.auth.decorators import login_required
-from .models import InstructorProfile, StudentProfile, Course, Lecture, QR_Code_Upload
+from .models import InstructorProfile, StudentProfile, Course, Lecture, QR_Code_Upload, getUploadsForCourse
 
 import zoneinfo
 import json
@@ -129,12 +129,23 @@ def createCourse(request):
 
     if not (name and start and end and days):
         return HttpResponseBadRequest("Missing field")
-
+    try:
+        start_t = datetime.strptime(start, "%H:%M").time()
+        end_t = datetime.strptime(end, "%H:%M").time()
+    except ValueError:
+        return HttpResponseBadRequest("Course already exists")  
     Course.objects.create(
         CourseID=_next_id(Course, "CourseID"),
         coursename=name,
         Instructor=InstructorProfile.objects.get(user=request.user),
         meetingschedule=f"{','.join(days)} {start}-{end}",
+        start_time=start_t,
+        end_time=end_t,
+        day_mon="day-mon" in request.POST,
+        day_tue="day-tue" in request.POST,
+        day_wed="day-wed" in request.POST,
+        day_thu="day-thu" in request.POST,
+        day_fri="day-fri" in request.POST,
     )
     return HttpResponse("Course created")
 
@@ -188,6 +199,21 @@ def dumpUploads(request):
     ]
     return JsonResponse(data, safe=False)
 
+@require_GET
+def getUploads(request):
+    if not _is_instructor(request.user):
+        return HttpResponse("Unauthorized", status=401)
+
+    course = request.GET.get("course")
+    if not course:
+        return JsonResponse({"error": "Missing course parameter"}, status=400)
+
+    uploads = getUploadsForCourse(course)
+    data = [
+        {"username": u.student.user.username,
+        "upload_time": u.time.astimezone(CDT).strftime("%Y-%m-%d %H:%M:%S")}
+        for u in uploads]
+    return JsonResponse(data, safe = False)
 
    
         

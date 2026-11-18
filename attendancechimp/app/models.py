@@ -23,6 +23,9 @@ import logging
 import string
 import random
 
+from zoneinfo import ZoneInfo
+from datetime import datetime
+
 logger = logging.getLogger(__name__) # set up tracking, auditing, and debugging
                                                                # allows using logger.warning(), logger.error(), 
                                                                # logger.info(), etc. Better than print() for debuggin... 
@@ -56,6 +59,18 @@ class Course(models.Model):
     Instructor = models.ForeignKey(InstructorProfile, on_delete = models.CASCADE)
     meetingschedule = models.CharField(max_length = 50)
 
+    course = models.CharField(max_length = 50, unique = True, null = True, blank =True)
+    start_time = models.TimeField(null = True, blank = True)
+    end_time = models.TimeField(null = True, blank = True)
+    day_mon = models.BooleanField(default = False)
+    day_tue = models.BooleanField(default = False)
+    day_wed = models.BooleanField(default = False)
+    day_thu = models.BooleanField(default = False)
+    day_fri = models.BooleanField(default = False)
+    def meet_on_day(self, weekday):
+        """weekday: 0 = Monday ... 4 = Friday (same as datetime.weekday())."""
+        days = [self.day_mon, self.day_tue, self.day_wed, self.day_thu, self.day_fri]
+        return weekday < 5 and days[weekday]
 
 
 # ---------------------------------------------------------------------------
@@ -89,7 +104,25 @@ class QR_Code_Upload(models.Model):
     lecture = models.ForeignKey(Lecture, on_delete = models.SET_NULL, null = True, blank = True)
     time = models.DateTimeField(auto_now_add = True)
     image = models.ImageField(upload_to = "uploads/")
+def getUploadsForCourse(course):
+    """Return a list of QR_Code_Upload objects that are valid for the course number."""
+    course_obj = Course.objects.filter(Course=course).first()
+    if course_obj is None:
+        return[]
 
+    chicago = ZoneInfo("America/Chicago")
+    valid = []
+    uploads = QR_Code_Upload.objects.filter(lecture__course=course_obj)
+    for u in uploads:
+        t = u.time
+        if t.tzinfo is not None:
+            t = t.astimezone(chicago)
+        if not course_obj.meets_on_day(t.weekday()):
+            continue
+        if course_obj.start_time is None or course_obj.end_time:
+            valid.append(u)
+    return valid
+QRCodeUpload = QR_Code_Upload
 
 
 # ---------------------------------------------------------------------------
