@@ -18,7 +18,7 @@ from .models import InstructorProfile, StudentProfile
 import random
 from django.db.models import Max
 from django.contrib.auth.decorators import login_required
-from .models import InstructorProfile, StudentProfile, Course, Lecture, QR_Code_Upload, getUploadsForCourse
+from .models import InstructorProfile, StudentProfile, Course, Lecture, QRCodeUpload, getUploadsForCourse
 
 import zoneinfo
 import json
@@ -180,7 +180,7 @@ def createQRCodeUpload(request):
         return HttpResponseBadRequest("Missing file")
 
     QR_Code_Upload.objects.create(
-        UploadID=_next_id(QR_Code_Upload, "UploadID"),
+        UploadID=_next_id(QRCodeUpload, "UploadID"),
         student=StudentProfile.objects.get(user=request.user),
         image=image,
     )
@@ -195,25 +195,9 @@ def dumpUploads(request):
     data = [
         {"username": u.student.user.username,
          "upload_time": u.time.astimezone(CDT).strftime("%Y-%m-%d %H:%M:%S")}
-        for u in QR_Code_Upload.objects.all()
+        for u in QRCodeUpload.objects.all()
     ]
     return JsonResponse(data, safe=False)
-
-@require_GET
-def getUploads(request):
-    if not _is_instructor(request.user):
-        return HttpResponse("Unauthorized", status=401)
-
-    course = request.GET.get("course")
-    if not course:
-        return JsonResponse({"error": "Missing course parameter"}, status=400)
-
-    uploads = getUploadsForCourse(course)
-    data = [
-        {"username": u.student.user.username,
-        "upload_time": u.time.astimezone(CDT).strftime("%Y-%m-%d %H:%M:%S")}
-        for u in uploads]
-    return JsonResponse(data, safe = False)
 
    
         
@@ -224,6 +208,23 @@ def getUploads(request):
 
 # ---------------------------------------------------------------------------
 # HW6  — getUploads
+
+@require_GET
+def getUploads(request):
+    if not _is_instructor(request.user):
+        return HttpResponse("Unauthorized", status=401)
+        
+    course = request.GET.get("course")
+    if not course:
+        return JsonResponse({"error": "Missing course parameter"}, status=400)
+    
+    uploads = getUploadsForCourse(course)
+    data = [
+        {"username": u.student.user.username,
+        "upload_time": u.time.astimezone(CDT).strftime("%Y-%m-%d %H:%M:%S")}
+        for u in uploads]
+    return JsonResponse(data, safe = False)
+
 # ---------------------------------------------------------------------------
 
 

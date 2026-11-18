@@ -98,21 +98,21 @@ class Lecture(models.Model):
 # ---------------------------------------------------------------------------
 # QR Code Upload
 # ---------------------------------------------------------------------------
-class QR_Code_Upload(models.Model):
+class QRCodeUpload(models.Model):
     UploadID = models.IntegerField(primary_key = True)
     student = models.ForeignKey(StudentProfile, on_delete = models.CASCADE)
     lecture = models.ForeignKey(Lecture, on_delete = models.SET_NULL, null = True, blank = True)
     time = models.DateTimeField(auto_now_add = True)
     image = models.ImageField(upload_to = "uploads/")
 def getUploadsForCourse(course):
-    """Return a list of QR_Code_Upload objects that are valid for the course number."""
-    course_obj = Course.objects.filter(Course=course).first()
+    """Return a list of QRCodeUpload objects that are valid for the course number."""
+    course_obj = Course.objects.filter(course=course).first()
     if course_obj is None:
         return[]
 
     chicago = ZoneInfo("America/Chicago")
     valid = []
-    uploads = QR_Code_Upload.objects.filter(lecture__course=course_obj)
+    uploads = QRCodeUpload.objects.filter(lecture__course=course_obj)
     for u in uploads:
         t = u.time
         if t.tzinfo is not None:
@@ -122,8 +122,6 @@ def getUploadsForCourse(course):
         if course_obj.start_time is None or course_obj.end_time:
             valid.append(u)
     return valid
-QRCodeUpload = QR_Code_Upload
-
 
 # ---------------------------------------------------------------------------
 # Helper / API functions
