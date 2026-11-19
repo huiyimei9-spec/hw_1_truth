@@ -121,8 +121,11 @@ def getUploadsForCourse(course):
         t = t.astimezone(chicago)
         if not course_obj.meets_on_day(t.weekday()):
             continue
-        if course_obj.start_time is None or course_obj.end_time:
-            valid.append(u)
+        
+        tod = t.time()
+        if tod <  course_obj.start_time or tod > course_obj.end_time:
+            continue
+        valid.append(u)
     return valid
 
 # ---------------------------------------------------------------------------
