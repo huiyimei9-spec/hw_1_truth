@@ -179,7 +179,7 @@ def createQRCodeUpload(request):
     if image is None:
         return HttpResponseBadRequest("Missing file")
 
-    QR_Code_Upload.objects.create(
+    QRCodeUpload.objects.create(
         UploadID=_next_id(QRCodeUpload, "UploadID"),
         student=StudentProfile.objects.get(user=request.user),
         image=image,
