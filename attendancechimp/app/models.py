@@ -68,7 +68,7 @@ class Course(models.Model):
     day_wed = models.BooleanField(default = False)
     day_thu = models.BooleanField(default = False)
     day_fri = models.BooleanField(default = False)
-    def meet_on_day(self, weekday):
+    def meets_on_day(self, weekday):
         """weekday: 0 = Monday ... 4 = Friday (same as datetime.weekday())."""
         days = [self.day_mon, self.day_tue, self.day_wed, self.day_thu, self.day_fri]
         return weekday < 5 and days[weekday]
