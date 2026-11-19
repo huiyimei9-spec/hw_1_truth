@@ -18,6 +18,7 @@ Entities
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 import logging
 import string
@@ -102,7 +103,7 @@ class QRCodeUpload(models.Model):
     UploadID = models.IntegerField(primary_key = True)
     student = models.ForeignKey(StudentProfile, on_delete = models.CASCADE)
     lecture = models.ForeignKey(Lecture, on_delete = models.SET_NULL, null = True, blank = True)
-    time = models.DateTimeField(auto_now_add = True)
+    time = models.DateTimeField(default = timezone.now)
     image = models.ImageField(upload_to = "uploads/")
 def getUploadsForCourse(course):
     """Return a list of QRCodeUpload objects that are valid for the course number."""
@@ -115,8 +116,9 @@ def getUploadsForCourse(course):
     uploads = QRCodeUpload.objects.filter(lecture__course=course_obj)
     for u in uploads:
         t = u.time
-        if t.tzinfo is not None:
-            t = t.astimezone(chicago)
+        if timezone.is_naive(t):
+            t = t.replace(tzinfo=ZoneInfo("UTC"))
+        t = t.astimezone(chicago)
         if not course_obj.meets_on_day(t.weekday()):
             continue
         if course_obj.start_time is None or course_obj.end_time:
