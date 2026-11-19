@@ -137,6 +137,7 @@ def createCourse(request):
     Course.objects.create(
         CourseID=_next_id(Course, "CourseID"),
         coursename=name,
+        course=name,
         Instructor=InstructorProfile.objects.get(user=request.user),
         meetingschedule=f"{','.join(days)} {start}-{end}",
         start_time=start_t,
